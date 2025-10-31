@@ -1,21 +1,49 @@
 package article2tweet.com.article2tweet.agent;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import article2tweet.com.article2tweet.domain.Article;
 import article2tweet.com.article2tweet.domain.TweetThread;
+import article2tweet.com.article2tweet.service.OpenAIService;
 
 class Article2TweetAgentTest {
 
     private Article2TweetAgent agent;
+    private OpenAIService mockOpenAIService;
 
     @BeforeEach
     void setUp() {
-        agent = new Article2TweetAgent();
+        mockOpenAIService = mock(OpenAIService.class);
+        agent = new Article2TweetAgent(mockOpenAIService);
+        
+        // Setup mock responses
+        List<String> mockInsights = Arrays.asList(
+            "AI development is accelerating rapidly with new breakthrough models.",
+            "Machine learning democratization is making AI accessible to more developers.", 
+            "Ethical considerations are becoming central to AI development processes."
+        );
+        
+        when(mockOpenAIService.extractKeyInsights(anyString(), anyString()))
+            .thenReturn(mockInsights);
+        when(mockOpenAIService.generateHookTweet(anyString(), anyString()))
+            .thenReturn("🧵 The future of AI development is here and it's exciting! Let me break down what's happening:");
+        when(mockOpenAIService.generateCasualTweet(anyString(), any(Integer.class)))
+            .thenReturn("First insight: AI development is moving fast")
+            .thenReturn("Second insight: ML is becoming more accessible")
+            .thenReturn("Third insight: Ethics matter more than ever");
+        when(mockOpenAIService.generateWrapUpTweet(anyString(), anyString()))
+            .thenReturn("That's a wrap! What do you think about these AI trends?");
     }
 
     @Test
@@ -74,30 +102,35 @@ class Article2TweetAgentTest {
         );
 
         // When
-        var keyPoints = agent.extractKeyPoints(testArticle);
+        var insights = agent.extractKeyInsights(testArticle);
 
         // Then
-        assertNotNull(keyPoints);
-        // Note: Our simple implementation might return empty if paragraphs are too short
-        // This is expected behavior for the current implementation
+        assertNotNull(insights);
+        assertEquals(3, insights.size());
         
-        // Each key point should be reasonably sized for tweets
-        for (String point : keyPoints) {
-            assertTrue(point.length() <= 240); // Leave room for thread numbering
+        // Each insight should be meaningful
+        for (String insight : insights) {
+            assertNotNull(insight);
+            assertTrue(insight.length() > 0);
         }
     }
 
     @Test
-    void testEmptyArticleHandling() {
+    void testAITweetThreadCreation() {
         // Given
-        Article emptyArticle = new Article("Empty", "", "https://test.com");
+        Article testArticle = new Article(
+            "AI Development Trends",
+            "AI is evolving rapidly with new breakthrough models and democratization efforts making it more accessible.",
+            "https://test.com/ai-trends"
+        );
 
         // When
-        TweetThread result = agent.createTwitterThread(emptyArticle);
+        TweetThread result = agent.createTwitterThread(testArticle);
 
         // Then
         assertNotNull(result);
-        // Should still create intro and final tweets even with empty content
-        assertTrue(result.getTweets().size() >= 2);
+        assertEquals(5, result.getTweets().size()); // Hook + 3 insights + wrap-up
+        assertEquals("AI Development Trends", result.getOriginalArticleTitle());
+        assertEquals("https://test.com/ai-trends", result.getOriginalArticleUrl());
     }
 }

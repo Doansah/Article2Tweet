@@ -6,6 +6,7 @@ import lombok.Data;
 public class ArticleFinder {
     private final String OPEN_API_KEY;
     private final String X_API_KEY;
+
     
 
 }

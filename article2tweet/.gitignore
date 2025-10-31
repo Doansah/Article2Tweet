@@ -37,3 +37,7 @@ build/
 .env.local
 .env.production
 .env.test
+
+## plan.md
+plan.md
+.plan.md

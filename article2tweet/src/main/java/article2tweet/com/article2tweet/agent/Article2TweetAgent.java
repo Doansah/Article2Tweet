@@ -1,17 +1,16 @@
 package article2tweet.com.article2tweet.agent;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import article2tweet.com.article2tweet.domain.Article;
 import article2tweet.com.article2tweet.domain.Tweet;
 import article2tweet.com.article2tweet.domain.TweetThread;
+import article2tweet.com.article2tweet.service.OpenAIService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-//import com.embabel.agent.api.annotation.Agent;
-//import com.embabel.agent.api.annotation.Action;
-//import com.embabel.agent.api.annotation.AchievesGoal;
-//import com.embabel.agent.api.common.OperationContext;
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * AI Agent that converts Medium articles into Twitter threads
@@ -20,115 +19,78 @@ import java.util.List;
  */
 //@Agent(description = "Convert Medium articles into engaging Twitter threads")
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class Article2TweetAgent {
+    
+    private final OpenAIService openAIService;
     
     private static final int MAX_TWEET_LENGTH = 280;
     private static final int RECOMMENDED_TWEET_LENGTH = 240; // Leave room for thread numbering
     
     /**
-     * Extract key points and main ideas from the article
+     * Extract key insights using OpenAI for intelligent content analysis
      */
     //@Action
-    public List<String> extractKeyPoints(Article article) {
-        log.info("Extracting key points from article: {}", article.getTitle());
+    public List<String> extractKeyInsights(Article article) {
+        log.info("Extracting key insights from article using AI: {}", article.getTitle());
         
-        // For now, we'll implement a simple extraction method
-        // In the full Embabel version, this would use LLM to intelligently extract key points
-        String content = article.getContent();
-        List<String> keyPoints = new ArrayList<>();
+        // Use OpenAI to intelligently extract exactly 3 key insights
+        List<String> insights = openAIService.extractKeyInsights(
+            article.getContent(), 
+            article.getTitle()
+        );
         
-        // Simple paragraph-based extraction (will be replaced with LLM)
-        String[] paragraphs = content.split("\\n\\s*\\n");
-        for (String paragraph : paragraphs) {
-            if (paragraph.trim().length() > 50) { // Skip very short paragraphs
-                // Extract the main idea (simplified - would use LLM in real implementation)
-                String mainIdea = extractMainIdea(paragraph.trim());
-                if (mainIdea.length() <= RECOMMENDED_TWEET_LENGTH) {
-                    keyPoints.add(mainIdea);
-                }
-            }
-        }
-        
-        log.info("Extracted {} key points", keyPoints.size());
-        return keyPoints;
+        log.info("Extracted {} AI-powered insights", insights.size());
+        return insights;
     }
     
     /**
-     * Convert key points into individual tweets
+     * Create exactly 5 tweets with casual tone: hook + 3 insights + wrap-up
      */
     //@Action
-    public List<Tweet> createTweetsFromKeyPoints(List<String> keyPoints, Article article) {
-        log.info("Converting {} key points into tweets", keyPoints.size());
+    public List<Tweet> createCasualTweetsFromInsights(List<String> insights, Article article) {
+        log.info("Creating 5-tweet thread in casual style for: {}", article.getTitle());
         
         List<Tweet> tweets = new ArrayList<>();
         
-        // First tweet - introduction with article title and author
-        String introTweet = String.format("🧵 Thread: %s by %s\n\nKey insights 👇", 
-                                        article.getTitle(), 
-                                        article.getAuthor() != null ? article.getAuthor() : "the author");
-        tweets.add(new Tweet(1, introTweet));
+        // Tweet 1: AI-generated engaging hook
+        String hookTweet = openAIService.generateHookTweet(article.getTitle(), insights.get(0));
+        tweets.add(new Tweet(1, hookTweet));
         
-        // Convert key points to tweets
-        for (int i = 0; i < keyPoints.size(); i++) {
-            String point = keyPoints.get(i);
-            String tweetContent = formatTweetContent(point, i + 2, keyPoints.size() + 2);
-            tweets.add(new Tweet(i + 2, tweetContent));
+        // Tweets 2-4: Convert insights to casual tweets
+        for (int i = 0; i < Math.min(insights.size(), 3); i++) {
+            String casualTweet = openAIService.generateCasualTweet(insights.get(i), i + 2);
+            tweets.add(new Tweet(i + 2, casualTweet));
         }
         
-        // Final tweet with call to action
-        String finalTweet = String.format("That's a wrap! 🎬\n\nRead the full article: %s\n\nWhat are your thoughts? 💭", 
-                                        article.getUrl());
-        tweets.add(new Tweet(keyPoints.size() + 2, finalTweet));
+        // Tweet 5: AI-generated wrap-up with article link
+        String wrapUpTweet = openAIService.generateWrapUpTweet(article.getTitle(), article.getUrl());
+        tweets.add(new Tweet(5, wrapUpTweet));
         
-        log.info("Created {} tweets total", tweets.size());
+        log.info("Created 5-tweet casual thread");
         return tweets;
     }
     
     /**
-     * Create the final tweet thread
+     * Create the final tweet thread with AI-powered content generation
      */
     //@AchievesGoal(description = "Create a complete Twitter thread from a Medium article")
     //@Action
     public TweetThread createTwitterThread(Article article) {
-        log.info("Creating Twitter thread for article: {}", article.getTitle());
+        log.info("Creating AI-powered Twitter thread for article: {}", article.getTitle());
         
-        List<String> keyPoints = extractKeyPoints(article);
-        List<Tweet> tweets = createTweetsFromKeyPoints(keyPoints, article);
+        // Extract key insights using OpenAI
+        List<String> insights = extractKeyInsights(article);
+        
+        // Create casual, engaging tweets from insights
+        List<Tweet> tweets = createCasualTweetsFromInsights(insights, article);
         
         TweetThread thread = new TweetThread(tweets, article.getUrl(), article.getTitle());
         
-        log.info("Created Twitter thread with {} tweets", thread.getTotalTweets());
+        log.info("Created AI-powered Twitter thread with {} tweets", thread.getTotalTweets());
         return thread;
     }
     
-    // Helper methods
-    
-    private String extractMainIdea(String paragraph) {
-        // Simplified extraction - in real implementation, this would use LLM
-        // For now, we'll take the first sentence or truncate if too long
-        String[] sentences = paragraph.split("\\.");
-        String firstSentence = sentences[0].trim();
-        
-        if (firstSentence.length() <= RECOMMENDED_TWEET_LENGTH) {
-            return firstSentence + ".";
-        } else {
-            // Truncate and add ellipsis
-            return firstSentence.substring(0, RECOMMENDED_TWEET_LENGTH - 3) + "...";
-        }
-    }
-    
-    private String formatTweetContent(String content, int currentTweet, int totalTweets) {
-        // Add thread numbering
-        String numbering = String.format("(%d/%d) ", currentTweet, totalTweets);
-        
-        // Ensure the content fits with numbering
-        int availableSpace = MAX_TWEET_LENGTH - numbering.length();
-        
-        if (content.length() <= availableSpace) {
-            return numbering + content;
-        } else {
-            return numbering + content.substring(0, availableSpace - 3) + "...";
-        }
-    }
+
 }

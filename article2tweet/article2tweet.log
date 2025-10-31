@@ -2,3 +2,52 @@
 1761932573712:test-env
 1761932642269:help
 1761932654703:create-mock-tweet
+1761934643507:help
+1761934655548:list-articles
+1761936607409:preview-thread 1
+1761936620372:create-smart-thread 1
+1761936684371:create-smart-thread --url https://medium.com/@dillondoa/backend-for-dummies-securing-your-web-app-49a3127b90de
+1761936727266:help-tweets
+1761936847552:test-env
+1761937083812:test-openai
+1761937266698:debug-api-key
+1761937368921:/mvnw clean compile
+1761937409376:help
+1761937414836:test-openai
+1761937424582:help
+1761937430553:test-envv
+1761937433269:test-env
+1761937452603:test-openai-simple
+1761937495669:help
+1761937513237:test-openai-direct
+1761937532031:help
+1761937551455:test-openai-direct
+1761937566900:debug-api-key
+1761937667875:help
+1761937717506:test-openai-simple
+1761937729448:test-openai
+1761937743058:test-openai-simple
+1761938005917:help
+1761938017116:test-openai-simple
+1761938061394:create-smart-thread
+1761938069870:create-smart-thread 2
+1761938087413:help
+1761938096349:list-articles
+1761938649806:help
+1761938656862:test-medium-api
+1761939250810:help
+1761939255569:list-articles
+1761939282756:test-medium-api
+1761939341561:help
+1761939460661:test-medium-rapidapi
+1761939692822:help
+1761939703993:create-smart-thread
+1761939713390:create-smart-thread 49a3127b90de
+1761939956868:help
+1761939972745:list-articles
+1761939994993:create-smart-thread 49a3127b90de
+1761951839968:create-smart-thread
+1761951898087:create-smart-thread https://medium.com/@dillondoa/backend-for-dummies-relational-databases-4f24403b5b7b
+1761952275039:help
+1761952284150:preview-thread
+1761952295383:list-articles
