@@ -1,7 +1,9 @@
 # Article2Tweet - AI-Powered Twitter Thread Generator
 
-Hi, this is Article2Tweet, it uses the Spring Shell Cli and it gives you the ability to generate Tweets, from Articles!
-I write Medium articles all the time, and I wanted to see if I could post tweets of them, so voila!
+Hi, this is Article2Tweet, it uses the Spring Shell CLI and it gives you the ability to generate Tweets, from Articles!
+I write Medium articles all the time, and I wanted to automate posting them on twitter as well!
+
+
 
 An AI-powered application built with **Embabel Agent Framework** that converts Medium articles into engaging Twitter threads.
 
@@ -19,13 +21,11 @@ An AI-powered application built with **Embabel Agent Framework** that converts M
 - **Spring Boot 3.5.7** - Application framework  
 - **Spring Shell** - Interactive command-line interface
 - **Embabel Agent Framework 0.1.3** - AI agent orchestration
-- **Lombok** - 
-- **Maven** - Build tool
+
 
 ## 📋 Prerequisites
 
 - Java 21 or higher
-- Maven 3.9+ (or use included Maven wrapper)
 - Optional: Medium API key from [RapidAPI](https://rapidapi.com/nishujain199719-vgIfuFHZxVZ/api/medium2)
 
 ## ⚡ Quick Start
@@ -98,14 +98,8 @@ anthropic.api.key=${ANTHROPIC_API_KEY:}
 4. **Output**: Displays formatted Twitter thread ready for posting
 
 
-
-## Future Additions:
-
-- **Full Embabel Integration**: Complete AI agent with LLM-powered content analysis
-- **Advanced Thread Strategies**: Different threading approaches based on content type  
-- **Social Media Integration**: Direct posting to Twitter/X
-- **Multi-Platform Support**: LinkedIn, Threads, 
-- **Analytics**: Track thread performance
+Check out my articles:
+[![Foo](https://github.com/user-attachments/assets/8019e38f-6a78-4658-a659-beb6b319594c)](https://medium.com/@dillondoa)
 
 
 ---
